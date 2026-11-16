@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart PDF Compressor | By Eng. Ahmed Bahgat</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    </script>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col font-sans selection:bg-indigo-500 selection:text-white">
+
+    <!-- Navbar -->
+    <header class="border-b border-slate-800 bg-slate-950/80 backdrop-blur sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 to-violet-500 flex items-center justify-center shadow-lg shadow-indigo-500/30">
+                    <i class="fa-solid fa-file-pdf text-white text-xl"></i>
+                </div>
+                <div>
+                    <span class="font-bold text-lg tracking-tight bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">Smart PDF Compressor</span>
+                    <span class="block text-xs text-indigo-400 font-medium">By Eng. Ahmed Bahgat</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                    <i class="fa-solid fa-magnifying-glass mr-1.5"></i> Searchable Text Preserved
+                </span>
+                <span class="hidden sm:inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+                    <i class="fa-solid fa-shield-halved mr-1.5"></i> 100% Client-Side
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-grow max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        
+        <div class="text-center space-y-2">
+            <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
+                Smart Searchable PDF Compressor
+            </h1>
+            <p class="text-slate-400 max-w-2xl mx-auto text-sm">
+                Full queue control (Pause, Resume, Stop, Retry) & per-file compression presets with Tiled Slicing for giant web PDFs.
+            </p>
+        </div>
+
+        <!-- Default Settings Card -->
+        <div class="bg-slate-950/50 border border-slate-800/80 rounded-2xl p-6 shadow-xl backdrop-blur space-y-6">
+            
+            <div>
+                <label class="block text-sm font-medium text-slate-300 mb-3">Default Compression Mode (For New Uploads)</label>
+                <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                    <label class="relative flex flex-col p-4 rounded-xl border border-slate-800 bg-slate-900/50 hover:bg-slate-900 cursor-pointer transition select-none">
+                        <input type="radio" name="defaultCompressionMode" value="lossless" class="peer sr-only">
+                        <div class="absolute inset-0 rounded-xl border-2 border-transparent peer-checked:border-indigo-500 pointer-events-none"></div>
+                        <span class="font-semibold text-white text-sm">Lossless / Vector</span>
+                        <span class="text-xs text-slate-400 mt-1">100% original vector quality & streams.</span>
+                    </label>
+
+                    <label class="relative flex flex-col p-4 rounded-xl border border-slate-800 bg-slate-900/50 hover:bg-slate-900 cursor-pointer transition select-none">
+                        <input type="radio" name="defaultCompressionMode" value="high" class="peer sr-only">
+                        <div class="absolute inset-0 rounded-xl border-2 border-transparent peer-checked:border-indigo-500 pointer-events-none"></div>
+                        <span class="font-semibold text-white text-sm">High Quality</span>
+                        <span class="text-xs text-slate-400 mt-1">1600px width, 78% JPEG + Text Layer.</span>
+                    </label>
+
+                    <label class="relative flex flex-col p-4 rounded-xl border border-slate-800 bg-slate-900/50 hover:bg-slate-900 cursor-pointer transition select-none">
+                        <input type="radio" name="defaultCompressionMode" value="balanced" checked class="peer sr-only">
+                        <div class="absolute inset-0 rounded-xl border-2 border-transparent peer-checked:border-indigo-500 pointer-events-none"></div>
+                        <span class="font-semibold text-white text-sm">Balanced (Recommended)</span>
+                        <span class="text-xs text-slate-400 mt-1">1350px width, 65% JPEG + Text Layer.</span>
+                    </label>
+
+                    <label class="relative flex flex-col p-4 rounded-xl border border-slate-800 bg-slate-900/50 hover:bg-slate-900 cursor-pointer transition select-none">
+                        <input type="radio" name="defaultCompressionMode" value="extreme" class="peer sr-only">
+                        <div class="absolute inset-0 rounded-xl border-2 border-transparent peer-checked:border-indigo-500 pointer-events-none"></div>
+                        <span class="font-semibold text-white text-sm">Extreme Compression</span>
+                        <span class="text-xs text-slate-400 mt-1">1100px width, 50% JPEG + Text Layer.</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Options Bar -->
+            <div class="flex flex-wrap items-center justify-between gap-4 border-t border-slate-800/80 pt-4 text-xs">
+                <label class="inline-flex items-center gap-2 text-slate-300 cursor-pointer">
+                    <input type="checkbox" id="grayscaleCheck" class="rounded bg-slate-900 border-slate-700 text-indigo-500 focus:ring-indigo-500">
+                    <span>Convert to Grayscale (Extra 30% reduction)</span>
+                </label>
+                <span class="text-slate-400"><i class="fa-solid fa-sliders text-indigo-400 mr-1"></i> You can change the mode for any uploaded file individually inside the queue.</span>
+            </div>
+
+            <!-- Dropzone -->
+            <div id="dropZone" class="border-2 border-dashed border-slate-700 hover:border-indigo-500 rounded-2xl p-8 text-center cursor-pointer transition bg-slate-900/30 hover:bg-indigo-500/5 group">
+                <input type="file" id="fileInput" accept="application/pdf" multiple class="hidden">
+                <div class="w-14 h-14 mx-auto mb-3 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center group-hover:scale-110 group-hover:border-indigo-500/50 transition">
+                    <i class="fa-solid fa-cloud-arrow-up text-2xl text-indigo-400"></i>
+                </div>
+                <h3 class="text-base font-semibold text-white mb-1">Drag & Drop your PDF files here</h3>
+                <p class="text-xs text-slate-400 mb-3">Supports multi-page PDFs & giant single-page web captures</p>
+                <span class="inline-flex items-center px-4 py-2 rounded-xl text-xs font-medium bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/25 transition">
+                    Select PDF Files
+                </span>
+            </div>
+        </div>
+
+        <!-- Files Processing Queue & Global Controls -->
+        <div id="fileQueueContainer" class="hidden space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-3 bg-slate-950/60 border border-slate-800 p-4 rounded-2xl">
+                <div class="flex items-center gap-3">
+                    <h3 class="text-base font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-list-check text-indigo-400"></i> Queue
+                        <span id="queueCount" class="text-xs bg-indigo-500/20 text-indigo-300 px-2.5 py-0.5 rounded-full">0 / 0</span>
+                    </h3>
+                </div>
+
+                <!-- Global Queue Controls -->
+                <div class="flex flex-wrap items-center gap-2">
+                    <button id="pauseAllBtn" onclick="toggleGlobalPause()" class="px-3 py-1.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/30 text-xs font-medium transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-pause"></i> <span>Pause All</span>
+                    </button>
+                    <button id="stopAllBtn" onclick="stopAllProcessing()" class="px-3 py-1.5 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 border border-rose-500/30 text-xs font-medium transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-stop"></i> <span>Stop All</span>
+                    </button>
+                    <button id="retryFailedBtn" onclick="retryAllFailed()" class="hidden px-3 py-1.5 rounded-xl bg-sky-500/15 hover:bg-sky-500/25 text-sky-300 border border-sky-500/30 text-xs font-medium transition items-center gap-1.5">
+                        <i class="fa-solid fa-rotate-right"></i> <span>Retry Failed</span>
+                    </button>
+                    <button onclick="clearQueue()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium transition">
+                        Clear
+                    </button>
+                    <button id="downloadAllBtn" onclick="downloadAllZip()" class="hidden items-center gap-1.5 px-4 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow-lg shadow-emerald-600/20 transition">
+                        <i class="fa-solid fa-file-zipper"></i> Download ZIP
+                    </button>
+                </div>
+            </div>
+
+            <div id="fileList" class="space-y-3"></div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-800 bg-slate-950 py-5 mt-12 text-center text-xs text-slate-500 space-y-1">
+        <p>Smart PDF Compressor — Searchable Text & Tiled Slicing Engine</p>
+        <p class="text-indigo-400 font-medium">Developed By Eng. Ahmed Bahgat</p>
+    </footer>
+
+    <script>
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const fileQueueContainer = document.getElementById('fileQueueContainer');
+        const fileList = document.getElementById('fileList');
+        const queueCount = document.getElementById('queueCount');
+        const downloadAllBtn = document.getElementById('downloadAllBtn');
+        const retryFailedBtn = document.getElementById('retryFailedBtn');
+        const pauseAllBtn = document.getElementById('pauseAllBtn');
+
+        let filesQueue = [];
+        let globalPaused = false;
+
+        dropZone.addEventListener('click', () => fileInput.click());
+        dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('border-indigo-500', 'bg-indigo-500/10'); });
+        dropZone.addEventListener('dragleave', () => { dropZone.classList.remove('border-indigo-500', 'bg-indigo-500/10'); });
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('border-indigo-500', 'bg-indigo-500/10');
+            if (e.dataTransfer.files.length > 0) handleFiles(e.dataTransfer.files);
+        });
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) handleFiles(e.target.files);
+            fileInput.value = '';
+        });
+
+        function handleFiles(files) {
+            fileQueueContainer.classList.remove('hidden');
+            const defaultMode = document.querySelector('input[name="defaultCompressionMode"]:checked').value;
+
+            for (let file of files) {
+                if (file.type !== 'application/pdf') continue;
+                const fileId = 'file_' + Math.random().toString(36).substring(2, 9);
+                const item = {
+                    id: fileId,
+                    fileRef: file, // Keep original File reference for re-compression or retry
+                    name: file.name,
+                    originalSize: file.size,
+                    mode: defaultMode,
+                    status: 'processing', // processing | paused | stopped | completed | error
+                    isPaused: false,
+                    isStopped: false,
+                    progress: 0,
+                    statusText: 'Queued...',
+                    newSize: 0,
+                    blob: null
+                };
+                filesQueue.push(item);
+                renderFileItem(item);
+                processPdfFile(item);
+            }
+            updateQueueUI();
+        }
+
+        // Control Functions
+        function toggleFilePause(id) {
+            const item = filesQueue.find(f => f.id === id);
+            if (!item || (item.status !== 'processing' && item.status !== 'paused')) return;
+            item.isPaused = !item.isPaused;
+            item.status = item.isPaused ? 'paused' : 'processing';
+            if (item.isPaused) item.statusText = 'Paused by user';
+            updateFileItemUI(item);
+            updateQueueUI();
+        }
+
+        function stopFile(id) {
+            const item = filesQueue.find(f => f.id === id);
+            if (!item) return;
+            item.isStopped = true;
+            item.isPaused = false;
+            item.status = 'stopped';
+            item.statusText = 'Stopped by user';
+            updateFileItemUI(item);
+            updateQueueUI();
+        }
+
+        function retryFile(id) {
+            const item = filesQueue.find(f => f.id === id);
+            if (!item) return;
+            item.isStopped = false;
+            item.isPaused = false;
+            item.status = 'processing';
+            item.progress = 0;
+            item.blob = null;
+            item.statusText = 'Restarting...';
+            updateFileItemUI(item);
+            updateQueueUI();
+            processPdfFile(item);
+        }
+
+        function changeFileMode(id, newMode) {
+            const item = filesQueue.find(f => f.id === id);
+            if (!item) return;
+            item.mode = newMode;
+            // Cancel current run if active and restart with new mode
+            item.isStopped = true;
+            setTimeout(() => {
+                item.isStopped = false;
+                item.isPaused = false;
+                item.status = 'processing';
+                item.progress = 0;
+                item.blob = null;
+                item.statusText = `Re-compressing (${newMode})...`;
+                updateFileItemUI(item);
+                updateQueueUI();
+                processPdfFile(item);
+            }, 80);
+        }
+
+        function toggleGlobalPause() {
+            globalPaused = !globalPaused;
+            pauseAllBtn.innerHTML = globalPaused
+                ? `<i class="fa-solid fa-play"></i> <span>Resume All</span>`
+                : `<i class="fa-solid fa-pause"></i> <span>Pause All</span>`;
+
+            filesQueue.forEach(item => {
+                if (item.status === 'processing' || item.status === 'paused') {
+                    item.isPaused = globalPaused;
+                    item.status = globalPaused ? 'paused' : 'processing';
+                    if (globalPaused) item.statusText = 'Paused (Global)';
+                    updateFileItemUI(item);
+                }
+            });
+            updateQueueUI();
+        }
+
+        function stopAllProcessing() {
+            filesQueue.forEach(item => {
+                if (item.status === 'processing' || item.status === 'paused') {
+                    item.isStopped = true;
+                    item.isPaused = false;
+                    item.status = 'stopped';
+                    item.statusText = 'Stopped';
+                    updateFileItemUI(item);
+                }
+            });
+            updateQueueUI();
+        }
+
+        function retryAllFailed() {
+            filesQueue.forEach(item => {
+                if (item.status === 'error' || item.status === 'stopped') {
+                    retryFile(item.id);
+                }
+            });
+        }
+
+        function clearQueue() {
+            filesQueue.forEach(item => item.isStopped = true);
+            filesQueue = [];
+            fileList.innerHTML = '';
+            fileQueueContainer.classList.add('hidden');
+            updateQueueUI();
+        }
+
+        async function waitWhilePaused(item) {
+            while ((item.isPaused || globalPaused) && !item.isStopped) {
+                await new Promise(r => setTimeout(r, 150));
+            }
+        }
+
+        async function processPdfFile(item) {
+            try {
+                await waitWhilePaused(item);
+                if (item.isStopped) return;
+
+                item.statusText = 'Reading file into memory...';
+                item.progress = 5;
+                updateFileItemUI(item);
+
+                const arrayBuffer = await item.fileRef.arrayBuffer();
+                if (item.isStopped) return;
+
+                if (item.mode === 'lossless') {
+                    item.statusText = 'Optimizing vector streams & metadata...';
+                    item.progress = 50;
+                    updateFileItemUI(item);
+
+                    const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
+                    const optimizedBytes = await pdfDoc.save({ useObjectStreams: true });
+                    if (item.isStopped) return;
+
+                    const newBlob = new Blob([optimizedBytes], { type: 'application/pdf' });
+                    item.blob = newBlob;
+                    item.newSize = newBlob.size;
+                    item.status = 'completed';
+                    item.progress = 100;
+                    item.statusText = 'Completed (Lossless Vector)';
+                    updateFileItemUI(item);
+                    updateQueueUI();
+                    return;
+                }
+
+                const isGrayscale = document.getElementById('grayscaleCheck').checked;
+                const presets = {
+                    high:     { targetWidth: 1600, quality: 0.78 },
+                    balanced: { targetWidth: 1350, quality: 0.65 },
+                    extreme:  { targetWidth: 1100, quality: 0.50 }
+                };
+                const { targetWidth, quality } = presets[item.mode] || presets.balanced;
+
+                const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
+                const pdfDocJs = await loadingTask.promise;
+                const numPages = pdfDocJs.numPages;
+
+                const newPdfDoc = await PDFLib.PDFDocument.create();
+                const helveticaFont = await newPdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
+                const MAX_TILE_HEIGHT = 2400;
+
+                for (let i = 1; i <= numPages; i++) {
+                    await waitWhilePaused(item);
+                    if (item.isStopped) return;
+
+                    const page = await pdfDocJs.getPage(i);
+                    const unscaledViewport = page.getViewport({ scale: 1.0 });
+
+                    let scale = targetWidth / unscaledViewport.width;
+                    if (scale > 2.0) scale = 2.0;
+                    if (scale < 0.8) scale = 0.8;
+
+                    const fullViewport = page.getViewport({ scale: scale });
+                    const totalScaledHeight = fullViewport.height;
+                    const totalScaledWidth = fullViewport.width;
+
+                    const pdfPage = newPdfDoc.addPage([unscaledViewport.width, unscaledViewport.height]);
+
+                    // Preserve Searchable Invisible Text Layer
+                    try {
+                        const textContent = await page.getTextContent();
+                        for (const textItem of textContent.items) {
+                            if (!textItem.str || !textItem.str.trim()) continue;
+                            const tx = textItem.transform;
+                            const fontSize = Math.max(4, Math.hypot(tx[2], tx[3]));
+                            // Sanitize non-WinAnsi characters safely so pdf-lib never throws encoding errors
+                            const safeText = textItem.str.replace(/[^\x20-\x7E]/g, ' ');
+                            if (safeText.trim()) {
+                                pdfPage.drawText(safeText, {
+                                    x: tx[4],
+                                    y: tx[5],
+                                    size: fontSize,
+                                    font: helveticaFont,
+                                    opacity: 0 // Invisible searchable layer underneath
+                                });
+                            }
+                        }
+                    } catch (textErr) {
+                        // Continue gracefully if text layer extraction fails on scanned pages
+                    }
+
+                    const numSlices = Math.ceil(totalScaledHeight / MAX_TILE_HEIGHT);
+
+                    for (let s = 0; s < numSlices; s++) {
+                        await waitWhilePaused(item);
+                        if (item.isStopped) return;
+
+                        const sliceY = s * MAX_TILE_HEIGHT;
+                        const sliceHeight = Math.min(MAX_TILE_HEIGHT, totalScaledHeight - sliceY);
+
+                        item.statusText = numSlices > 1
+                            ? `Page ${i}/${numPages} — Slice ${s + 1}/${numSlices}...`
+                            : `Processing page ${i} of ${numPages}...`;
+
+                        const pageProgress = ((i - 1) + ((s + 1) / numSlices)) / numPages;
+                        item.progress = Math.round(10 + pageProgress * 85);
+                        updateFileItemUI(item);
+
+                        const canvas = document.createElement('canvas');
+                        canvas.width = Math.floor(totalScaledWidth);
+                        canvas.height = Math.floor(sliceHeight);
+                        const ctx = canvas.getContext('2d', { alpha: false });
+
+                        ctx.fillStyle = '#ffffff';
+                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                        const sliceViewport = page.getViewport({
+                            scale: scale,
+                            offsetX: 0,
+                            offsetY: -sliceY
+                        });
+
+                        await page.render({ canvasContext: ctx, viewport: sliceViewport }).promise;
+
+                        if (isGrayscale) {
+                            const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                            const data = imgData.data;
+                            for (let p = 0; p < data.length; p += 4) {
+                                const gray = 0.299 * data[p] + 0.587 * data[p + 1] + 0.114 * data[p + 2];
+                                data[p] = data[p + 1] = data[p + 2] = gray;
+                            }
+                            ctx.putImageData(imgData, 0, 0);
+                        }
+
+                        const dataUrl = canvas.toDataURL('image/jpeg', quality);
+                        const jpgBytes = Uint8Array.from(atob(dataUrl.split(',')[1]), c => c.charCodeAt(0));
+                        const embeddedJpg = await newPdfDoc.embedJpg(jpgBytes);
+
+                        const pdfSliceHeight = (sliceHeight / totalScaledHeight) * unscaledViewport.height;
+                        const pdfSliceTop = (sliceY / totalScaledHeight) * unscaledViewport.height;
+                        const pdfY = unscaledViewport.height - pdfSliceTop - pdfSliceHeight;
+
+                        pdfPage.drawImage(embeddedJpg, {
+                            x: 0,
+                            y: pdfY,
+                            width: unscaledViewport.width,
+                            height: pdfSliceHeight
+                        });
+
+                        canvas.width = 0;
+                        canvas.height = 0;
+                        await new Promise(r => setTimeout(r, 5));
+                    }
+                }
+
+                if (item.isStopped) return;
+                item.statusText = 'Finalizing searchable PDF...';
+                item.progress = 98;
+                updateFileItemUI(item);
+
+                const finalBytes = await newPdfDoc.save({ useObjectStreams: true });
+                if (item.isStopped) return;
+
+                const newBlob = new Blob([finalBytes], { type: 'application/pdf' });
+                item.blob = newBlob;
+                item.newSize = newBlob.size;
+                item.status = 'completed';
+                item.progress = 100;
+                item.statusText = 'Completed Successfully';
+
+                updateFileItemUI(item);
+                updateQueueUI();
+
+            } catch (err) {
+                if (item.isStopped) return;
+                console.error(err);
+                item.status = 'error';
+                item.statusText = 'Failed: ' + (err.message || 'Memory or parsing error');
+                updateFileItemUI(item);
+                updateQueueUI();
+            }
+        }
+
+        function formatBytes(bytes, decimals = 2) {
+            if (!bytes || bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(decimals)) + ' ' + sizes[i];
+        }
+
+        function renderFileItem(item) {
+            const div = document.createElement('div');
+            div.id = item.id;
+            div.className = 'bg-slate-950/80 border border-slate-800 rounded-xl p-4 space-y-3 transition';
+            div.innerHTML = `
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <div class="flex items-center space-x-3 overflow-hidden min-w-[200px] flex-1">
+                        <div class="w-10 h-10 rounded-lg bg-indigo-500/10 text-indigo-400 flex items-center justify-center shrink-0 border border-indigo-500/20">
+                            <i class="fa-solid fa-file-pdf"></i>
+                        </div>
+                        <div class="truncate">
+                            <h4 class="text-sm font-semibold text-white truncate">${item.name}</h4>
+                            <p class="text-xs text-slate-400 item-status">${item.statusText}</p>
+                        </div>
+                    </div>
+
+                    <!-- Per-File Mode Selector & Size Info -->
+                    <div class="flex flex-wrap items-center gap-3 shrink-0">
+                        <div class="flex items-center gap-1.5">
+                            <span class="text-[11px] text-slate-400">Mode:</span>
+                            <select onchange="changeFileMode('${item.id}', this.value)" class="item-mode-select bg-slate-900 border border-slate-700 hover:border-indigo-500 rounded-lg px-2.5 py-1 text-xs text-white focus:outline-none">
+                                <option value="lossless" ${item.mode === 'lossless' ? 'selected' : ''}>Lossless</option>
+                                <option value="high" ${item.mode === 'high' ? 'selected' : ''}>High Quality</option>
+                                <option value="balanced" ${item.mode === 'balanced' ? 'selected' : ''}>Balanced</option>
+                                <option value="extreme" ${item.mode === 'extreme' ? 'selected' : ''}>Extreme</option>
+                            </select>
+                        </div>
+                        <div class="text-xs font-medium text-slate-400 item-sizes">${formatBytes(item.originalSize)}</div>
+                    </div>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="w-full bg-slate-900 rounded-full h-2 overflow-hidden item-progress-bar">
+                    <div class="bg-indigo-500 h-2 rounded-full transition-all duration-200" style="width: ${item.progress}%"></div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="item-actions flex items-center justify-between pt-1"></div>
+            `;
+            fileList.appendChild(div);
+            updateFileItemUI(item);
+        }
+
+        function updateFileItemUI(item) {
+            const el = document.getElementById(item.id);
+            if (!el) return;
+
+            el.querySelector('.item-status').innerText = item.statusText;
+            const bar = el.querySelector('.item-progress-bar div');
+            bar.style.width = item.progress + '%';
+
+            // Reset bar colors
+            bar.classList.remove('bg-indigo-500', 'bg-amber-500', 'bg-rose-500', 'bg-emerald-500');
+
+            const actionsDiv = el.querySelector('.item-actions');
+
+            if (item.status === 'processing' || item.status === 'paused') {
+                bar.classList.add(item.isPaused ? 'bg-amber-500' : 'bg-indigo-500');
+                actionsDiv.innerHTML = `
+                    <span class="text-xs ${item.isPaused ? 'text-amber-400' : 'text-indigo-400'} font-medium">
+                        ${item.progress}%
+                    </span>
+                    <div class="flex items-center gap-2">
+                        <button onclick="toggleFilePause('${item.id}')" class="px-3 py-1 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/30 text-xs font-medium transition flex items-center gap-1">
+                            <i class="fa-solid ${item.isPaused ? 'fa-play' : 'fa-pause'}"></i> ${item.isPaused ? 'Resume' : 'Pause'}
+                        </button>
+                        <button onclick="stopFile('${item.id}')" class="px-3 py-1 rounded-lg bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 border border-rose-500/30 text-xs font-medium transition flex items-center gap-1">
+                            <i class="fa-solid fa-stop"></i> Stop
+                        </button>
+                    </div>
+                `;
+            } else if (item.status === 'completed') {
+                bar.classList.add('bg-emerald-500');
+                const diff = item.originalSize - item.newSize;
+                const percent = Math.round((diff / item.originalSize) * 100);
+
+                el.querySelector('.item-sizes').innerHTML = `
+                    <span class="line-through text-slate-500 mr-1.5">${formatBytes(item.originalSize)}</span>
+                    <span class="text-emerald-400 font-bold">${formatBytes(item.newSize)}</span>
+                    <span class="text-xs bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded-full ml-1.5">-${percent > 0 ? percent : 0}%</span>
+                `;
+
+                actionsDiv.innerHTML = `
+                    <span class="text-xs text-emerald-400 font-medium"><i class="fa-solid fa-check-circle mr-1"></i> Searchable & Ready</span>
+                    <div class="flex items-center gap-2">
+                        <button onclick="retryFile('${item.id}')" title="Re-compress" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium transition">
+                            <i class="fa-solid fa-rotate-right"></i>
+                        </button>
+                        <a href="${URL.createObjectURL(item.blob)}" download="compressed_${item.name}" class="px-4 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-md shadow-indigo-600/20 transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-download"></i> Download
+                        </a>
+                    </div>
+                `;
+            } else if (item.status === 'error' || item.status === 'stopped') {
+                bar.classList.add('bg-rose-500');
+                actionsDiv.innerHTML = `
+                    <span class="text-xs text-rose-400 font-medium"><i class="fa-solid fa-triangle-exclamation mr-1"></i> ${item.status === 'stopped' ? 'Stopped' : 'Failed'}</span>
+                    <button onclick="retryFile('${item.id}')" class="px-3 py-1.5 rounded-lg bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-rotate-right"></i> Retry
+                    </button>
+                `;
+            }
+        }
+
+        function updateQueueUI() {
+            const completedCount = filesQueue.filter(f => f.status === 'completed').length;
+            const failedOrStoppedCount = filesQueue.filter(f => f.status === 'error' || f.status === 'stopped').length;
+
+            queueCount.innerText = `${completedCount} / ${filesQueue.length}`;
+
+            if (completedCount > 1) {
+                downloadAllBtn.classList.remove('hidden');
+                downloadAllBtn.classList.add('flex');
+            } else {
+                downloadAllBtn.classList.add('hidden');
+                downloadAllBtn.classList.remove('flex');
+            }
+
+            if (failedOrStoppedCount > 0) {
+                retryFailedBtn.classList.remove('hidden');
+                retryFailedBtn.classList.add('flex');
+            } else {
+                retryFailedBtn.classList.add('hidden');
+                retryFailedBtn.classList.remove('flex');
+            }
+        }
+
+        async function downloadAllZip() {
+            const zip = new JSZip();
+            const completed = filesQueue.filter(f => f.status === 'completed');
+            if (completed.length === 0) return;
+
+            for (let item of completed) {
+                zip.file(`compressed_${item.name}`, item.blob);
+            }
+
+            const content = await zip.generateAsync({ type: 'blob' });
+            const url = URL.createObjectURL(content);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'compressed_pdfs.zip';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+    </script>
+</body>
+</html>
